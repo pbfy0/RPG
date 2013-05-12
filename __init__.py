@@ -10,15 +10,15 @@ def choose_race():
 		race = input('Race: ').lower()
 	return races.races[race]
 def choose_class():
-	cls = ''
-	while not cls in classes.classes:
-		cls = input('Class: ').lower()
-	return classes.classes[cls]
+	class_ = ''
+	while not class_ in classes.classes:
+		class_ = input('Class: ').lower()
+	return classes.classes[class_]
 
 name = input('Name: ')
 race = choose_race()
-cls = choose_class()
-player = core.Player(race, cls, name)
+class_ = choose_class()
+player = core.Player(race, class_, name)
 for i in player.moves: print(i.desc())
 #p(x.__dict__)
 while True:

@@ -44,15 +44,15 @@ class Entity(object):
 		pass
 
 class Player(races.BaseRace, classes.BaseClass, Entity):
-	def __init__(self, race, clazz, name):
+	def __init__(self, race, class_, name):
 		race.__init__(self)
-		clazz.__init__(self)
+		class_.__init__(self)
 		self.stats = {}
 		self.level = 1
 		self.xp = 0;
 		self.update_stats()
 		self.set_stats() # here for a good reason
-		self.type = race.name + ' ' + clazz.__name__
+		self.type = race.name + ' ' + class_.__name__
 		self.name = name
 	def update_stats(self):
 		lv_up = False
