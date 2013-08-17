@@ -91,6 +91,7 @@ class Player(Entity):
 	def __str__(self):
 		return self.name
 
+import functools
 def arg_deco(func):
 	def _wrap(*args, **kwargs):
 		@functools.wraps(func)
