@@ -5,20 +5,21 @@ p = pprint.PrettyPrinter().pprint
 
 unlocked = dict(gladiator=False, sage=False, saint=False, joker=False, master=False)
 def choose_race():
-	race = ''
+	race = input('Race: ')
 	while not race in races.races:
-		race = input('Race: ').lower()
+		race = input('  ... ').lower()
 	return races.races[race]
 def choose_class():
-	clazz = ''
-	while not clazz in classes.classes:
-		clazz = input('Class: ').lower()
-	return classes.classes[clazz]
+	class_ = input('Class: ').lower()
+	while not class_ in classes.classes:
+		class_ = input('   ... ').lower()
+	return classes.classes[class_]
 
 name = input('Name: ')
 race = choose_race()
-clazz = choose_class()
-player = core.Player(race, clazz, name)
+class_ = choose_class()
+player_type = type('Player', (core.Player, race, class_), {})
+player = player_type(race, class_, name)
 for i in player.moves: print(i.desc())
 #p(x.__dict__)
 while True:
@@ -29,7 +30,8 @@ while True:
 	enemy = random.choice(enemy_choices)
 	ce = enemy()
 	print('A {enemy} has spotted you!'.format(enemy=str(ce)))
-	attacker, attacked = (player, ce) if player.stats['speed'] > ce.stats['speed'] else (ce, player)
+	ps, es = (x*random.random()/4+0.875 for x in (player.stats['speed'], ce.stats['speed']))
+	attacker, attacked = (player, ce) if ps > es else (ce, player)
 	while True:
 		attacker.every_round()
 		move = attacker.choose_move()

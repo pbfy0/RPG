@@ -10,7 +10,7 @@ class Entity(object):
 	def attack(self, other, move):
 		print('{name} used {move}'.format(name=str(self), move=move))
 		m = move.use(self, other)
-		if move.__class__ == moves.HealingMove:
+		if isinstance(move, moves.HealingMove):
 			self.heal(m['heal'])
 			m['killed'] = False
 		else:
@@ -43,16 +43,17 @@ class Entity(object):
 	def killed(self, other):
 		pass
 
-class Player(races.BaseRace, classes.BaseClass, Entity):
-	def __init__(self, race, clazz, name):
+class Player(Entity):
+	def __init__(self, race, class_, name):
+		super().__init__()
 		race.__init__(self)
-		clazz.__init__(self)
+		class_.__init__(self)
 		self.stats = {}
 		self.level = 1
 		self.xp = 0;
 		self.update_stats()
 		self.set_stats() # here for a good reason
-		self.type = race.name + ' ' + clazz.__name__
+		self.type = race.name + ' ' + class_.__name__
 		self.name = name
 	def update_stats(self):
 		lv_up = False
@@ -62,7 +63,7 @@ class Player(races.BaseRace, classes.BaseClass, Entity):
 			self.level += 1
 			print('New level: {level}'.format(level=self.level))
 		for i in self.bases:
-			self.stats[i] = self.bases[i] + (self.bases[i]/4) * self.multipliers[i] * self.level
+			self.stats[i] = round(self.bases[i] + (self.bases[i]/4) * self.multipliers[i] * self.level)
 		if lv_up:
 			self.set_stats()
 	def every_round(self):
@@ -83,8 +84,23 @@ class Player(races.BaseRace, classes.BaseClass, Entity):
 		self.update_stats()
 		self.set_stats()
 		print('You died. Respawning. One level lost.')
+		print('New level: {level}'.format(level=self.level))
 	def killed(self, other):
 		self.xp += other.xp
 		self.update_stats()
 	def __str__(self):
 		return self.name
+
+import functools
+def arg_deco(func):
+	def _wrap(*args, **kwargs):
+		@functools.wraps(func)
+		def _wrap2(val):
+			return func(val, *args, **kwargs)
+		return _wrap2
+	return _wrap
+
+@arg_deco
+def name(x, n):
+	x.__name__ = n
+	return x

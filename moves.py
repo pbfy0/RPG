@@ -41,13 +41,15 @@ class MagicMove(Move):
 		damage = caster.stats[self.stat]/2+self.power/5
 		return dict(damage=intfloor(damage), type=hit)
 	def desc(self):
-		return '{name}: {power} damage, {cost} cost'.format(**self.__dict__)
+		return '{name}: {power} damage, {cost} cost'.format_map(self.__dict__)
 class HealingMove(MagicMove):
 	def __init__(self, name, power, cost):
 		MagicMove.__init__(self, name, power, cost)
 		self.type = 'heal'
 	def cast(self, caster):
 		return dict(heal=intfloor(self.power), type=heal_t)
+	def desc(self):
+		return '{name}: {power} healing, {cost} cost'.format_map(self.__dict__)
 punch = PhysicalMove('Punch', 30)
 kick = PhysicalMove('Kick', 50)
 bite = PhysicalMove('Bite', 40)
@@ -57,6 +59,7 @@ thunderpunch = PhysicalMove('Thunder Punch', 70)
 icepunch = PhysicalMove('Ice Punch', 70)
 lunarbash = PhysicalMove('Lunar Bash', 80)
 solarsmash = PhysicalMove('Solar Smash', 80)
+shieldbash = PhysicalMove('Shield Bash', 35) # To add: stun
 
 flame = MagicMove('Flame', 50, 2)
 chill = MagicMove('Chill', 50, 2)

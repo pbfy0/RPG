@@ -1,64 +1,65 @@
 import moves
+import itertools
 
-class BaseClass(object):
-	def __init__(self):
-		self.moves = [moves.punch]
-		#self.bases = {} #dict(hp=0, mp=0, attack=0, defense=0, wisdom=0, speed=0)
-
+def combo(cls):
+	
+	cls.moves += itertools.chain.from_iterable(x.moves for x in cls.__bases__)
+	cls.moves = list(set(cls.moves))
+	#print(cls.moves)
+	return cls
+def bcombo(cls):
+	sup_bases = [x.bases for x in cls.__bases__]
+	n_bases = {}
+	for i in sup_bases[0]:
+		#print('hi')
+		all = [base[i] for base in sup_bases]
+		cls.bases[i] = sum(all) / len(all) * 1.2
+	return cls
+class BaseClass:
+	moves = [moves.punch]
+	bases = {}
+@combo
 class Warrior(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = dict(hp=19, mp=4, attack=23, defense=16, wisdom=7, speed=15)
-		self.moves += [moves.kick]
+	bases = dict(hp=19, mp=4, attack=23, defense=16, wisdom=7, speed=15)
+	moves = [moves.kick]
+@combo
 class Mage(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = dict(hp=12, mp=20, attack=6, defense=9, wisdom=22, speed=13)
-		self.moves += [moves.flame]
+	bases = dict(hp=12, mp=20, attack=6, defense=9, wisdom=22, speed=13)
+	moves = [moves.flame]
+@combo
 class Priest(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'speed': 14, 'wisdom': 23, 'hp': 11, 'attack': 8, 'mp': 19, 'defense': 5}
-		self.moves += [moves.heal]
+	bases = dict(hp=11, mp=19, attack=8, defense=5, wisdom=23, speed=14)
+	moves = [moves.heal]
+@combo
 class Bard(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'hp': 18, 'speed': 11, 'wisdom': 13, 'attack': 14, 'defense': 13, 'mp': 11}
-		self.moves += [moves.chill]
+	bases = dict(hp=18, mp=11, attack=14, defense=13, wisdom=13, speed=11)
+	moves = [moves.chill]
+@combo
 class Ninja(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'attack': 18, 'defense': 14, 'mp': 5, 'hp': 12, 'wisdom': 7, 'speed': 24}
-		self.moves += [moves.agility]
+	bases = dict(hp=12, mp=5, attack=18, defense=14, wisdom=7, speed=24)
+	moves = []#moves.agility]
+@combo
 class Guard(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'mp': 6, 'attack': 15, 'speed': 10, 'hp': 22, 'defense': 23, 'wisdom': 4}
-		self.moves += [moves.defend]
+	bases = dict()
+	moves = []#moves.defend]
 # advanced classes
+@combo
+@bcombo
+class Theurge(Mage, Priest):
+	bases = {}
+	moves = []
+	pass
 class Gladiator(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'mp': 8, 'attack': 30, 'defense': 18, 'speed': 14, 'wisdom': 8, 'hp': 22}
+	bases = dict(hp=22, mp=8, attack=30, defense=18, wisdom=8, speed=14)
 class Sage(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'wisdom': 28, 'defense': 8, 'hp': 12, 'speed': 16, 'attack': 4, 'mp': 32}
+	bases = dict(hp=12, mp=32, attack=4, defense=8, wisdom=28, speed=16)
 class Saint(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'defense': 7, 'attack': 7, 'mp': 24, 'hp': 12, 'wisdom': 32, 'speed': 18}
+	bases = dict(hp=12, mp=24, attack=7, defense=7, wisdom=32, speed=18)
 class Joker(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'wisdom': 16, 'hp': 20, 'mp': 16, 'speed': 16, 'attack': 16, 'defense': 16}
+	bases = dict(hp=20, mp=16, attack=16, defense=16, wisdom=16, speed=16)
 class Master(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'mp': 10, 'attack': 23, 'speed': 30, 'defense': 12, 'hp': 15, 'wisdom': 10}
+	bases = dict(hp=15, mp=10, attack=23, defense=12, wisdom=10, speed=30)
 class Paladin(BaseClass):
-	def __init__(self):
-		BaseClass.__init__(self)
-		self.bases = {'attack': 21, 'defense': 24, 'wisdom': 12, 'speed': 2, 'mp': 14, 'hp': 27}
+	bases = dict(hp=27, mp=14, attack=21, defense=24, wisdom=12, speed=2)
 
-classes = dict(warrior=Warrior, mage=Mage, priest=Priest, bard=Bard, ninja=Ninja, guard=Guard, gladiator=Gladiator, sage=Sage, saint=Saint, joker=Joker, master=Master, paladin=Paladin)
+classes = dict(warrior=Warrior, mage=Mage, priest=Priest, bard=Bard, ninja=Ninja, guard=Guard, gladiator=Gladiator, sage=Sage, saint=Saint, joker=Joker, master=Master, paladin=Paladin, theurge=Theurge)
