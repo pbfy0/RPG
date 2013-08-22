@@ -8,38 +8,35 @@ class Entity(object):
 		self.hp = self.stats['hp']
 		self.mp = self.stats['mp']
 	def attack(self, other, move):
-		print('{name} used {move}'.format(name=str(self), move=move))
-		m = move.use(self, other)
-		if isinstance(move, moves.HealingMove):
-			self.heal(m['heal'])
-			m['killed'] = False
-		else:
-			if m['type'] == moves.miss: print('Miss!')
-			if m['type'] == moves.crit: print('Crit!')
-			m['killed'] = self.deal_damage(other, m['damage'])
-		return m
+		print('{} used {}'.format(self, move))
+		move.use(self, other)
 	def deal_damage(self, other, n):
+		n = int(n)
 		other.take_damage(n)
-		if other.hp <= 0:
+		if other.dead:
 			other.die()
 			self.killed(other)
 			return True
 		return False
+	@property
+	def dead(self):
+		return self.hp <= 0
 	def take_damage(self, n):
-		self.hp -= n
-		print('{name} took {damage} damage!'.format(name=str(self), damage=n))
+		if n != 0:
+			self.hp -= n
+			print('{} took {} damage!'.format(self, n))
 	def heal(self, n):
-		self.hp += n
-		print('{name} healed {n} HP!'.format(name=str(self), n=n))
+		self.hp = min(self.hp + n, self.stats['hp'])
+		print('{} healed {} HP!'.format(self, n))
 	def every_round(self):
 		self.hp = min(self.hp + 1, self.stats['hp'])
-		self.mp = min(self.mp + self.stats['wisdom']/10, self.stats['mp'])
+		self.mp = min(self.mp + round(self.stats['wisdom']/10), self.stats['mp'])
 	def choose_move(self):
 		return random.choice(self.moves)
 	def __str__(self):
-		return self.__class__.__name__
+		return type(self).__name__
 	def die(self):
-		print('{name} died'.format(name=str(self)))
+		print('{} died'.format(self))
 	def killed(self, other):
 		pass
 
@@ -67,24 +64,17 @@ class Player(Entity):
 		if lv_up:
 			self.set_stats()
 	def every_round(self):
-		Entity.every_round(self)
-		print('HP: {cur} / {max}'.format(cur=self.hp, max=self.stats['hp']))
+		super().every_round()
+		print('HP: {} / {} MP: {} / {}'.format(self.hp, self.stats['hp'], self.mp, self.stats['mp']))
 	def choose_move(self):
-		move = None
-		while not move in self.moves:
-			movestring = ''
-			while not movestring in moves.moves:
-				movestring = input('What move do you want to use? ')
-			move = moves.moves[movestring]
-		return move
+		return prompt('What move do you want to use? ', moves.moves)
 	def die(self):
 		Entity.die(self)
 		self.level -= 1
 		self.xp = 0
+		print('You died. Respawning. One level lost.')
 		self.update_stats()
 		self.set_stats()
-		print('You died. Respawning. One level lost.')
-		print('New level: {level}'.format(level=self.level))
 	def killed(self, other):
 		self.xp += other.xp
 		self.update_stats()
@@ -104,3 +94,10 @@ def arg_deco(func):
 def name(x, n):
 	x.__name__ = n
 	return x
+
+def prompt(prompt, valid):
+	v = input(prompt)
+	t = '... '.rjust(len(prompt))
+	while not v in valid:
+		v = input(t)
+	return valid[v]

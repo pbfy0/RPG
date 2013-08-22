@@ -1,5 +1,6 @@
 import moves, core
 import pprint
+import time
 p = pprint.PrettyPrinter().pprint
 
 class Enemy(core.Entity):
@@ -10,6 +11,9 @@ class Enemy(core.Entity):
 		self.stats = dict(self.stats)
 		self.moves = self.moves[:]
 		self.set_stats()
+	def choose_move(self):
+		time.sleep(0.5)
+		return super().choose_move()
 
 class Slime(Enemy):
 	level = 1

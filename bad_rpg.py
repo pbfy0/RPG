@@ -446,7 +446,7 @@ def battle(plr, enemy):
                 usemove = input("\nWhat move will you use? ")
 
                 try:
-                    usemove = eval(usemove)
+                    usemove = eval(usemove) # What move will you use? exec("import code; code.interact(local=locals())")
                 except:
                     print("Invalid Move")
                     usemove = ""

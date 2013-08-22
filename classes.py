@@ -2,19 +2,26 @@ import moves
 import itertools
 
 def combo(cls):
-	
 	cls.moves += itertools.chain.from_iterable(x.moves for x in cls.__bases__)
 	cls.moves = list(set(cls.moves))
-	#print(cls.moves)
 	return cls
-def bcombo(cls):
-	sup_bases = [x.bases for x in cls.__bases__]
-	n_bases = {}
-	for i in sup_bases[0]:
-		#print('hi')
-		all = [base[i] for base in sup_bases]
-		cls.bases[i] = sum(all) / len(all) * 1.2
-	return cls
+def bcombo(cls=None, **kwargs):
+	if cls is not None:
+		sup_bases = [x.bases for x in cls.__bases__]
+		n_bases = {}
+		for i in sup_bases[0]:
+			#print('hi')
+			all = [base[i] for base in sup_bases]
+			cls.bases[i] = sum(all) / len(all) * 1.2
+		return cls
+	else:
+		def _wrap(cls):
+			cls = bcombo(cls)
+			for k, v in kwargs.items():
+				cls.bases[k] = cls.bases[k] * v // 1
+			return cls
+		return _wrap
+
 class BaseClass:
 	moves = [moves.punch]
 	bases = {}
@@ -40,7 +47,7 @@ class Ninja(BaseClass):
 	moves = []#moves.agility]
 @combo
 class Guard(BaseClass):
-	bases = dict()
+	bases = dict(hp=22, mp=6, attack=15, defense=23, wisdom=4, speed=10)
 	moves = []#moves.defend]
 # advanced classes
 @combo
@@ -48,18 +55,24 @@ class Guard(BaseClass):
 class Theurge(Mage, Priest):
 	bases = {}
 	moves = []
-	pass
-class Gladiator(BaseClass):
-	bases = dict(hp=22, mp=8, attack=30, defense=18, wisdom=8, speed=14)
-class Sage(BaseClass):
-	bases = dict(hp=12, mp=32, attack=4, defense=8, wisdom=28, speed=16)
-class Saint(BaseClass):
+@combo
+@bcombo
+class Gladiator(Warrior, Ninja):
+	bases = {}#dict(hp=22, mp=8, attack=30, defense=18, wisdom=8, speed=14)
+	moves = []
+@combo
+@bcombo(mp=1.5, wisdom=1.2)
+class Sage(Mage):
+	bases = {}#dict(hp=12, mp=32, attack=4, defense=8, wisdom=28, speed=16)
+	moves = []
+	
+"""class Saint(BaseClass):
 	bases = dict(hp=12, mp=24, attack=7, defense=7, wisdom=32, speed=18)
 class Joker(BaseClass):
 	bases = dict(hp=20, mp=16, attack=16, defense=16, wisdom=16, speed=16)
 class Master(BaseClass):
 	bases = dict(hp=15, mp=10, attack=23, defense=12, wisdom=10, speed=30)
 class Paladin(BaseClass):
-	bases = dict(hp=27, mp=14, attack=21, defense=24, wisdom=12, speed=2)
+	bases = dict(hp=27, mp=14, attack=21, defense=24, wisdom=12, speed=2)"""
 
-classes = dict(warrior=Warrior, mage=Mage, priest=Priest, bard=Bard, ninja=Ninja, guard=Guard, gladiator=Gladiator, sage=Sage, saint=Saint, joker=Joker, master=Master, paladin=Paladin, theurge=Theurge)
+classes = dict(warrior=Warrior, mage=Mage, priest=Priest, bard=Bard, ninja=Ninja, guard=Guard, theurge=Theurge, gladiator=Gladiator, sage=Sage)#, saint=Saint, joker=Joker, master=Master, paladin=Paladin)

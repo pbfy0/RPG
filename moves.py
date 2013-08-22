@@ -3,53 +3,52 @@ heal_t = -1
 miss = 0
 hit = 1
 crit = 2
-intfloor = lambda x: int(math.floor(x))
 class Move(object):
-	def __init__(self, name, power, stat):
+	def __init__(self, name, basepower, stat):
 		self.name = name
-		self.power = power
+		self.basepower = basepower
 		self.type = 'damage'
 		self.stat = stat
+	def power(self, user):
+		return user.stats[self.stat]/2+self.basepower/5
 	def __str__(self):
 		return self.name
 
 class PhysicalMove(Move):
-	def __init__(self, name, power):
-		Move.__init__(self, name, power, 'attack')
+	def __init__(self, name, basepower):
+		super().__init__(name, basepower, 'attack')
 	def use(self, user, on):
-		damage = (user.stats[self.stat]/2+self.power/5) - on.stats['defense']/4
-		n = random.randrange(10)
-		ret = hit
-		if n == 0: ret = miss
-		if n == 9: ret = crit
+		damage = self.power(user) - on.stats['defense']/4
+		ret = random.choice((miss, hit, hit, hit, hit, hit, hit, hit, hit, crit))
+		if ret != hit: print('Miss!' if ret == miss else 'Crit!')
 		damage *= ret
-		return dict(damage=intfloor(damage), type=ret)
+		user.deal_damage(on, damage)
 	def desc(self):
-		return '{name}: {power} damage'.format(**self.__dict__)
+		return '{name}: {basepower} damage'.format_map(self.__dict__)
 
 class MagicMove(Move):
-	def __init__(self, name, power, cost):
-		Move.__init__(self, name, power, 'wisdom')
+	def __init__(self, name, basepower, cost):
+		super().__init__(name, basepower, 'wisdom')
 		self.cost = cost
 	def use(self, caster, at=None):
 		if caster.mp >= self.cost:
 			caster.mp -= self.cost;
-			return self.cast(caster)
+			self.cast(caster, at)
 		else:
-			return dict(damage=0, type=miss)
-	def cast(self, caster):
-		damage = caster.stats[self.stat]/2+self.power/5
-		return dict(damage=intfloor(damage), type=hit)
+			print('Out of MP')
+	def cast(self, caster, at):
+		damage = self.power(caster)
+		caster.deal_damage(at, damage)
 	def desc(self):
-		return '{name}: {power} damage, {cost} cost'.format_map(self.__dict__)
+		return '{name}: {basepower} damage, {cost} cost'.format_map(self.__dict__)
 class HealingMove(MagicMove):
-	def __init__(self, name, power, cost):
-		MagicMove.__init__(self, name, power, cost)
+	def __init__(self, name, basepower, cost):
+		super().__init__(name, basepower, cost)
 		self.type = 'heal'
-	def cast(self, caster):
-		return dict(heal=intfloor(self.power), type=heal_t)
+	def cast(self, caster, at):
+		caster.heal(self.power(caster))
 	def desc(self):
-		return '{name}: {power} healing, {cost} cost'.format_map(self.__dict__)
+		return '{name}: {basepower} healing, {cost} cost'.format_map(self.__dict__)
 punch = PhysicalMove('Punch', 30)
 kick = PhysicalMove('Kick', 50)
 bite = PhysicalMove('Bite', 40)
