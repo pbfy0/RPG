@@ -1,7 +1,5 @@
-import pprint
 import core, races, classes, enemies, moves
 import random
-p = pprint.PrettyPrinter().pprint
 
 unlocked = dict(gladiator=False, sage=False, saint=False, joker=False, master=False)
 
@@ -23,8 +21,8 @@ while True:
 	while True:
 		attacker.every_round()
 		move = attacker.choose_move()
-		a = attacker.attack(attacked, move)
-		if attacked.dead:
+		attacker.attack(attacked, move)
+		if attacked.dead or attacker.dead:
 			print()
 			break
 		attacker, attacked = attacked, attacker

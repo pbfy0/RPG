@@ -1,7 +1,5 @@
 import moves, core
-import pprint
 import time
-p = pprint.PrettyPrinter().pprint
 
 class Enemy(core.Entity):
 	stats = {}
