@@ -1,4 +1,4 @@
-import moves, core
+import moves, core, util
 import time
 
 class Enemy(core.Entity):
@@ -19,7 +19,7 @@ class Slime(Enemy):
 	moves = [moves.shock, moves.punch]
 	xp = 4
 
-@core.name('War dog')
+@util.name('War dog')
 class WarDog(Enemy):
 	level = 1
 	stats = dict(hp=15, mp=0, attack=22, defense=14, wisdom=0, speed=18)
@@ -35,7 +35,7 @@ class Wizrobe(Enemy):
 	stats = dict(hp=15, mp=30, attack=12, defense=14, wisdom=28, speed=15)
 	moves = [moves.flame, moves.heal]
 	xp = 6
-@core.name('King Zombie')
+@util.name('King Zombie')
 class KingZombie(Enemy):
 	level = 15
 	stats = dict(hp=200, mp=50, attack=30, defense=25, wisdom=20, speed=30)

@@ -1,4 +1,4 @@
-import races, classes, moves
+import races, classes, moves, util
 import random
 
 
@@ -67,7 +67,7 @@ class Player(Entity):
 		super().every_round()
 		print('HP: {} / {} MP: {} / {}'.format(self.hp, self.stats['hp'], self.mp, self.stats['mp']))
 	def choose_move(self):
-		return prompt('What move do you want to use? ', moves.moves)
+		return util.prompt('What move do you want to use? ', {k: v for k, v in moves.moves.items() if v in self.moves})
 	def die(self):
 		Entity.die(self)
 		self.level -= 1
@@ -80,24 +80,3 @@ class Player(Entity):
 		self.update_stats()
 	def __str__(self):
 		return self.name
-
-import functools
-def arg_deco(func):
-	def _wrap(*args, **kwargs):
-		@functools.wraps(func)
-		def _wrap2(val):
-			return func(val, *args, **kwargs)
-		return _wrap2
-	return _wrap
-
-@arg_deco
-def name(x, n):
-	x.__name__ = n
-	return x
-
-def prompt(prompt, valid):
-	v = input(prompt)
-	t = '... '.rjust(len(prompt))
-	while not v in valid:
-		v = input(t)
-	return valid[v]

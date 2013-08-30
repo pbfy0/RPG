@@ -1,11 +1,11 @@
-import core, races, classes, enemies, moves
+import core, races, classes, enemies, moves, util
 import random
 
 unlocked = dict(gladiator=False, sage=False, saint=False, joker=False, master=False)
 
 name = input('Name: ').capitalize()
-race = core.prompt('Race: ', races.races)
-class_ = core.prompt('Class: ', classes.classes)
+race = util.prompt('Race: ', races.races)
+class_ = util.prompt('Class: ', classes.classes)
 player = type('Player', (core.Player, race, class_), {})(race, class_, name)
 for i in player.moves: print(i.desc())
 #p(x.__dict__)

@@ -13,6 +13,8 @@ class Move(object):
 		return user.stats[self.stat]/2+self.basepower/5
 	def __str__(self):
 		return self.name
+	def __repr__(self):
+		return 'Move({name!r}, {basepower!r}, {stat!r})'.format_map(self.__dict__)
 
 class PhysicalMove(Move):
 	def __init__(self, name, basepower):
@@ -25,6 +27,8 @@ class PhysicalMove(Move):
 		user.deal_damage(on, damage)
 	def desc(self):
 		return '{name}: {basepower} damage'.format_map(self.__dict__)
+	def __repr__(self):
+		return 'PhysicalMove({name!r}, {basepower!r})'.format_map(self.__dict__)
 
 class MagicMove(Move):
 	def __init__(self, name, basepower, cost):
@@ -41,6 +45,9 @@ class MagicMove(Move):
 		caster.deal_damage(at, damage)
 	def desc(self):
 		return '{name}: {basepower} damage, {cost} cost'.format_map(self.__dict__)
+	def __repr__(self):
+		return '{0.__class__.__name__}({0.name!r}, {0.basepower!r}, {0.cost!r})'.format(self)
+
 class HealingMove(MagicMove):
 	def __init__(self, name, basepower, cost):
 		super().__init__(name, basepower, cost)
