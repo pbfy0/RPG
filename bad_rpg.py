@@ -444,7 +444,11 @@ def battle(plr, enemy):
             print("HP", plr.hpleft, "/", plr.HP)
             while not usemove:
                 usemove = input("\nWhat move will you use? ")
-
+                if usemove == 'help':
+                                 print("\nYour moves are:")
+                                 PLR.showmoves()
+                                 print(f'enemy hp:{enemy.HP}')
+                                 print(f'enemy mp:{enemy.MP}')
                 try:
                     usemove = eval(usemove) # What move will you use? exec("import code; code.interact(local=locals())")
                 except:
